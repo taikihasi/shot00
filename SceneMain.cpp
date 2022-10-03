@@ -1,10 +1,17 @@
 #include "DxLib.h"
 #include "SceneMain.h"
 
+namespace
+{
+	// ƒVƒ‡ƒbƒg‚Ì”­ŽËŠÔŠu
+	constexpr int kShotInterval = 16;
+}
+
 SceneMain::SceneMain()
 {
 	m_hPlayerGraphic = -1;
 	m_hShotGraphic = -1;
+	m_shotInterval = 0;
 }
 SceneMain::~SceneMain()
 {
@@ -41,11 +48,21 @@ void SceneMain::update()
 	{
 		shot.update();
 	}
+	m_shotInterval--;
+	if (m_shotInterval < 0) m_shotInterval = 0;
 
 	// ƒL[“ü—Íˆ—
 	int padState = GetJoypadInputState(DX_INPUT_KEY_PAD1);
-	if (padState & PAD_INPUT_1)
+	if((padState & PAD_INPUT_1) && (m_shotInterval <= 0))
 	{
+		for (auto& shot : m_shot)
+		{
+			if (shot.isExist()) continue;
+
+			shot.start(m_player.getPos());
+			m_shotInterval = kShotInterval;
+			break;
+		}		
 	}
 }
 
@@ -58,4 +75,12 @@ void SceneMain::draw()
 	{
 		shot.draw();
 	}
+
+	// Œ»Ý‘¶Ý‚µ‚Ä‚¢‚é’e‚Ì”‚ð•\Ž¦
+	int shotNum = 0;
+	for (auto& shot : m_shot)
+	{
+		if (shot.isExist()) shotNum++;
+	}
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "’e‚Ì”:%d", shotNum);
 }
