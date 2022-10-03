@@ -14,9 +14,9 @@ public:
 	virtual void start(Vec2 pos);
 
 	// çXêV
-	void update();
+	virtual void update();
 	// ï\é¶
-	void draw();
+	virtual void draw();
 
 	// ë∂ç›Ç∑ÇÈÇ©
 	bool isExist() const { return m_isExist; }
