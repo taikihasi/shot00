@@ -1,20 +1,22 @@
-#include "ShotNormal.h"
+#include "ShotCurve.h"
 #include "game.h"
 
 namespace
 {
 	constexpr float kShotSpeed = 8.0f;
+	constexpr float kShotGravity = 8.0f;
 }
 
-void ShotNormal::start(Vec2 pos)
+
+void ShotCurve::start(Vec2 pos)
 {
 	ShotBase::start(pos);
 
 	m_vec.x = kShotSpeed;
-	m_vec.y = 0.0f;
+	m_vec.y = kShotGravity;
 }
 
-void ShotNormal::update()
+void ShotCurve::update()
 {
 	if (!m_isExist) return;
 	m_pos += m_vec;

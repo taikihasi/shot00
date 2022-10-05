@@ -27,9 +27,13 @@ void SceneMain::init()
 	m_player.init();
 	m_player.setMain(this);
 
-	for (auto& shot : m_shot)
+	for (auto& shot : m_pShotNormal)
 	{
-		shot.setHandle(m_hShotGraphic);
+		shot = nullptr;
+	}
+	for (auto& shot : m_pShotBound)
+	{
+		shot = nullptr;
 	}
 }
 
@@ -38,15 +42,43 @@ void SceneMain::end()
 {
 	DeleteGraph(m_hPlayerGraphic);
 	DeleteGraph(m_hShotGraphic);
+
+	for (auto& shot : m_pShot)
+	{
+		if (!pShot) continue;
+		delete pShot;
+		shot = nullptr;
+	}
+	for (auto& shot : m_pShotBound)
+	{
+		if (!shot) continue;
+		shot = nullptr;
+	}
 }
 
 // –ˆƒtƒŒ[ƒ€‚Ìˆ—
 void SceneMain::update()
 {
 	m_player.update();
-	for (auto& shot : m_shot)
+	for (auto& shot : m_pShot)
 	{
-		shot.update();
+		if (!shot) continue;
+		shot->update();
+		if (!shot->isExist())
+		{
+			delete shot;
+			shot = nullptr;
+		}
+	}
+	for (auto& shot : m_pShotBound)
+	{
+		if (!shot) continue;
+		shot->update();
+		if (!shot->isExist())
+		{
+			delete shot;
+			shot = nullptr;
+		}
 	}
 }
 
@@ -55,28 +87,62 @@ void SceneMain::draw()
 {
 	m_player.draw();
 
-	for (auto& shot : m_shot)
+	for (auto& shot : m_pShotNormal)
 	{
-		shot.draw();
+		if (!shot) continue;
+		shot->draw();
+	}
+	for (auto& shot : m_pShotBound)
+	{
+		if (!shot) continue;
+		shot->draw();
 	}
 
 	// Œ»İ‘¶İ‚µ‚Ä‚¢‚é’e‚Ì”‚ğ•\¦
 	int shotNum = 0;
-	for (auto& shot : m_shot)
+	for (auto& shot : m_pShot)
 	{
-		if (shot.isExist()) shotNum++;
+		if (!Shot) continue;
+		if (pShot->isExist()) shotNum++;
 	}
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "’e‚Ì”:%d", shotNum);
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "Normal:%d", shotNum);
 }
 
 bool SceneMain::createShot(Vec2 pos)
 {
-	for (auto& shot : m_shot)
+	for (auto& shot : m_pShot)
+	{
+		if (Shot) continue;
+
+		pShot = new ShotNormal;
+		pShot->setHandle(m_hPlayerGraphic);
+		pShot->start(pos);
+		return true;
+	}
+#if false
+	for (auto& shot : m_shotNormal)
 	{
 		if (shot.isExist()) continue;
 
 		shot.start(pos);
 		return true;
+	}
+#endif
+	return false;
+}
+
+bool SceneMain::createShot(Vec2 pos)
+{
+	for (auto& shot : m_pShotBound)
+	{
+		if (shot) continue;
+
+		shot = new ShotNormal;
+		shot->setHandle(m_hShotGraphic);
+		shot->start(pos);
+		return true;
+
+		delete;
 	}
 	return false;
 }
